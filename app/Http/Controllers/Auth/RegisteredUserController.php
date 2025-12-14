@@ -6,11 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rule; // Tambahkan ini untuk validasi enum
 
 class RegisteredUserController extends Controller {
     /**
@@ -23,31 +22,23 @@ class RegisteredUserController extends Controller {
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['nullable', 'string', 'max:255'],
-            #'password_confirmation' => ['required', 'confirmed', Rules\Password::defaults()],
+            // Validasi: Role hanya boleh 'admin' atau 'customer' (atau null)
+            'role' => ['nullable', 'string', Rule::in(['admin', 'customer'])],
         ]);
 
+        // Logic penentuan role: Jika request kosong, default ke 'customer'
+        // (Sesuai dengan migration Anda: 'customer')
+        $role = $request->role ?? 'customer';
 
-        if ($request->role) {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'role' => $request->role,
-                'password' => Hash::make($request->string('password')),
-            ]);
-        } else {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'role' => 'pelanggan',
-                'password' => Hash::make($request->string('password')),
-            ]);
-        }
-
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $role,
+            'password' => Hash::make($request->string('password')),
+        ]);
 
         event(new Registered($user));
 
-        // Auth::login($user);
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
