@@ -86,6 +86,7 @@ class OrderController extends Controller {
                         'redirect_url' => $midtransResponse['redirect_url'] ?? null,
                     ], 201);
                 } else {
+                    \Log::error('Midtrans Error Response:', (array) $midtransResponse);
                     throw new \Exception('Gagal mendapatkan Token Midtrans');
                 }
             });
@@ -154,9 +155,9 @@ class OrderController extends Controller {
         }
 
         if ($newStatus) {
-
             if ($newStatus == 'settlement' && $order->status_pembayaran !== 'settlement') {
                 foreach ($order->items as $item) {
+
                     // Cara 1: Lewat relasi (jika relasi product sudah di-load)
                     if ($item->product) {
                         $item->product->decrement('stock', $item->quantity);
