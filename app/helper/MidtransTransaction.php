@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 class MidtransTransaction {
     public static function createTransaction($data) {
         $serverKey = env('SERVER_MIDTRANS_KEY'); // Pastikan ini ada di .env
-        $encodedKey = base64_encode($serverKey . ':');
+        $encodedKey = base64_encode($serverKey . ': ');
 
         $response = Http::withHeaders([
             'Authorization' => 'Basic ' . $encodedKey,
