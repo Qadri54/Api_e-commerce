@@ -154,6 +154,18 @@ class OrderController extends Controller {
         }
 
         if ($newStatus) {
+
+            if ($newStatus == 'settlement' && $order->status_pembayaran !== 'settlement') {
+                foreach ($order->items as $item) {
+                    // Cara 1: Lewat relasi (jika relasi product sudah di-load)
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+
+                    // Cara 2 (Alternatif aman jika relasi null):
+                    // Product::where('id', $item->product_id)->decrement('stock', $item->quantity);
+                }
+            }
             // Update status di tabel orders
             $order->update(['status_pembayaran' => $newStatus]);
 
