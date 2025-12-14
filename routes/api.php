@@ -44,12 +44,12 @@ Route::prefix('auth')->group(function () {
         // Catatan: Biasanya link di email mengarah ke Frontend, lalu Frontend hit endpoint ini
         Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
             ->middleware(['signed', 'throttle:6,1'])
-            ->name('verification.verify');
+            ->name('api.verification.verify');
 
         // Kirim Ulang Email Verifikasi
         Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
             ->middleware(['throttle:6,1'])
-            ->name('verification.send');
+            ->name('api.verification.send');
     });
 
 });
