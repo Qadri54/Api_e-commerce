@@ -32,15 +32,34 @@ class ProductController extends Controller {
 
     // --- ADMIN METHODS ---
     public function store(Request $request) {
-        $request->validate([
+        // 1. Validasi
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0', // Tambahkan validasi stok
+            'stock' => 'required|integer|min:0',
+            // Validasi gambar: wajib gambar, format jpeg/png/jpg, maks 2MB (2048 KB)
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $product = Product::create($request->all());
-        return response()->json(['message' => 'Produk berhasil ditambahkan', 'data' => $product], 201);
+        // 2. Cek apakah ada file gambar yang diupload
+        if ($request->hasFile('image_url')) {
+            // Upload gambar ke folder 'public/products'
+            // Hasilnya misal: 'products/namafileacak.jpg'
+            $imagePath = $request->file('image_url')->store('images', 'public');
+
+            // Masukkan path gambar ke dalam array data yang akan disimpan
+            $validatedData['image_url'] = $imagePath;
+        }
+
+        // 3. Simpan ke Database
+        // Kita gunakan $validatedData karena sudah berisi data input + path gambar (jika ada)
+        $product = Product::create($validatedData);
+
+        return response()->json([
+            'message' => 'Produk berhasil ditambahkan',
+            'data' => $product
+        ], 201);
     }
 
     public function update(Request $request, Product $product) {
