@@ -63,6 +63,11 @@ class AuthenticatedSessionController extends Controller {
             $user->email = $request->email;
         }
 
+        // Update role jika kolomnya ada di DB
+        if ($request->has('role')) {
+            $user->role = $request->role;
+        }
+
         // Update alamat jika kolomnya ada di DB
         if ($request->has('address')) {
             $user->address = $request->address;
