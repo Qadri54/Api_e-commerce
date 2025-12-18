@@ -51,10 +51,6 @@ Route::prefix('auth')->group(function () {
             ->middleware(['throttle:6,1'])
             ->name('api.verification.send');
     });
-
-
-    Route::post('/update', [AuthenticatedSessionController::class, 'updateProfile']);
-
 });
 
 /*
@@ -80,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', function (Request $request) {
         return $request->user();
     });
+
+    Route::put('/update', [AuthenticatedSessionController::class, 'updateProfile']);
+
 
     Route::post('/checkout', [OrderController::class, 'checkout']);
 
