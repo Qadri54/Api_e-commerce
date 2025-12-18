@@ -49,6 +49,7 @@ class AuthenticatedSessionController extends Controller {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|string|max:255',
+            'role' => 'nullable|email|string|max:255',
             'password' => 'nullable|min:6', // Validasi foto
             'address' => 'nullable|min:6', // Validasi foto
         ]);
