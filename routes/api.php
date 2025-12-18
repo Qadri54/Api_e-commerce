@@ -52,9 +52,6 @@ Route::prefix('auth')->group(function () {
             ->name('api.verification.send');
     });
 
-    Route::get('/profile', function (Request $request) {
-        return $request->user();
-    });
 
     Route::post('/update', [AuthenticatedSessionController::class, 'updateProfile']);
 
@@ -80,6 +77,10 @@ Route::post('/notification', [OrderController::class, 'notificationHandler']);
 Route::middleware('auth:sanctum')->group(function () {
     // --- FITUR CUSTOMER ---
     // 6 & 7: Checkout & Payment
+    Route::get('/profile', function (Request $request) {
+        return $request->user();
+    });
+
     Route::post('/checkout', [OrderController::class, 'checkout']);
 
     // 9: Lihat riwayat pembelian
