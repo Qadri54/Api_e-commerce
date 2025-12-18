@@ -41,6 +41,46 @@ class AuthenticatedSessionController extends Controller {
         ]);
     }
 
+
+    public function updateProfile(Request $request) {
+        $user = $request->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'nullable|string',
+            'password' => 'nullable|min:6',
+            'photo' => 'nullable|image|max:2048', // Validasi foto
+        ]);
+
+        $user->name = $request->name;
+
+        // Update alamat jika kolomnya ada di DB
+        if ($request->has('address')) {
+            $user->address = $request->address;
+        }
+
+        // Update password jika diisi
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        // Upload Foto
+        if ($request->hasFile('photo')) {
+            // Hapus foto lama jika bukan default (Opsional)
+            // if ($user->photo_path) Storage::delete($user->photo_path);
+
+            $path = $request->file('photo')->store('users', 'public');
+            $user->photo_path = $path; // Pastikan kolom photo_path ada di tabel users
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated',
+            'user' => $user // Kembalikan user terbaru
+        ]);
+    }
+
     /**
      * Destroy an authenticated session.
      */

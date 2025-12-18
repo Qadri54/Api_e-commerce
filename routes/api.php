@@ -52,11 +52,16 @@ Route::prefix('auth')->group(function () {
             ->name('api.verification.send');
     });
 
+    Route::get('/profile', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::post('/update', [AuthenticatedSessionController::class, 'updateProfile']);
+
 });
 
 /*
-|--------------------------------------------------------------------------
-| Public Routes (Bisa diakses tanpa login)
+|-------------------------------------------------------------------------- Public Routes (Bisa diakses tanpa login)
 |--------------------------------------------------------------------------
 */
 // 1, 2, 3: Lihat daftar, detail, dan cari produk
@@ -73,11 +78,6 @@ Route::post('/notification', [OrderController::class, 'notificationHandler']);
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth:sanctum')->group(function () {
-
-    Route::get('/profile', function (Request $request) {
-        return $request->user();
-    });
-
     // --- FITUR CUSTOMER ---
     // 6 & 7: Checkout & Payment
     Route::post('/checkout', [OrderController::class, 'checkout']);
