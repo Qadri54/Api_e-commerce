@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse; // <--- 1. Pastikan import ini ada
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller {
@@ -47,12 +48,18 @@ class AuthenticatedSessionController extends Controller {
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'nullable|string',
-            'password' => 'nullable|min:6',
-            'photo' => 'nullable|image|max:2048', // Validasi foto
+            'email' => 'required|email|string|max:255',
+            'password' => 'nullable|min:6', // Validasi foto
         ]);
 
-        $user->name = $request->name;
+        // Update nama jika kolomnya ada di DB
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        // Update email jika kolomnya ada di DB
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
 
         // Update alamat jika kolomnya ada di DB
         if ($request->has('address')) {

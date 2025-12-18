@@ -24,6 +24,7 @@ class RegisteredUserController extends Controller {
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             // Validasi: Role hanya boleh 'admin' atau 'customer' (atau null)
             'role' => ['nullable', 'string', Rule::in(['admin', 'customer'])],
+            'address' => ['nullable', 'string', 'max:200'],
         ]);
 
         // Logic penentuan role: Jika request kosong, default ke 'customer'
@@ -33,7 +34,8 @@ class RegisteredUserController extends Controller {
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $role,
+            'role' => $role,    
+            'address' => $request->address,
             'password' => Hash::make($request->string('password')),
         ]);
 

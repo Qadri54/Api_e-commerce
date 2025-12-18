@@ -19,7 +19,8 @@ class User extends Authenticatable {
         'name',
         'email',
         'password',
-        'role', // Menambahkan role agar bisa diisi
+        'role',
+        'address',
     ];
 
     /**
